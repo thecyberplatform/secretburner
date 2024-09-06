@@ -1,0 +1,2 @@
+class EmailVerificationError(Exception):
+    pass

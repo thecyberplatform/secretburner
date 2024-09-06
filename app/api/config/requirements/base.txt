@@ -1,0 +1,23 @@
+# Django
+channels[daphne]
+Django
+django-redis
+
+# Libraries
+argon2-cffi
+
+# REST framework
+djangorestframework
+djangorestframework-camel-case
+
+# Python-PostgreSQL Database Adapter
+psycopg2>=2.9.5
+
+# Utilize 12factor inspired environment variables
+django-environ
+
+# Tests to travel through time
+freezegun
+
+# Mail
+django-anymail[sendgrid]

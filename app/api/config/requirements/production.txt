@@ -1,0 +1,4 @@
+# Local development dependencies
+-r base.txt
+
+# This project uses Daphne which is production ready.

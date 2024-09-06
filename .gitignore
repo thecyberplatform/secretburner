@@ -1,0 +1,20 @@
+# OSX
+.DS_Store
+.vscode/
+.idea/
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+__pycache__
+
+# Environment files
+.env
+admin_static/
+static/
+media/
+
+# Testing
+.coverage
+app/api/coverage/
+
+app/ui/node_modules/**

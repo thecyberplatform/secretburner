@@ -1,0 +1,73 @@
+volumes:
+  pg_data: {}
+
+services:
+  secretburner-ui:
+    container_name: secretburner-ui
+    image: secretburner-ui:latest
+    build:
+      context: ../../
+      dockerfile: ./deploy/docker/ui/Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - type: bind
+        source: ../../app/ui
+        target: /app
+    env_file: ../../app/ui/.env
+    command: /start-server.sh
+
+  secretburner-api:
+    container_name: secretburner-api
+    image: secretburner-api:latest
+    build:
+      context: ../../
+      dockerfile: ./deploy/docker/api/Dockerfile
+      args:
+        pip_requirement_file: local.txt
+    depends_on:
+      - secretburner-db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../app/api:/app
+    env_file: ../../app/api/.env
+    environment:
+      APP_ENV: local
+    command: /start-server.sh
+    entrypoint: /entrypoint.sh
+
+  secretburner-db:
+    container_name: secretburner-db
+    image: secretburner-db:latest
+    build:
+      context: ../..
+      dockerfile: ./deploy/docker/db/Dockerfile
+      args:
+        cron_db: secretburner # Change this if you have a different DB_NAME in your .env file
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file: ../../app/api/.env
+
+  secretburner-proxy:
+    container_name: secretburner-proxy
+    image: secretburner-proxy:latest
+    build:
+      context: ../..
+      dockerfile: ./deploy/docker/nginx/Dockerfile
+      args:
+        nginx_conf_file: dev.conf
+    restart: always
+    env_file: ../../app/api/.env
+    command: /build.sh
+    ports:
+      - '80:80'
+      - '9001:9001'
+    depends_on:
+      - secretburner-api
+
+  secretburner-cache:
+    container_name: secretburner-cache
+    image: redis:alpine

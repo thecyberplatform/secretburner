@@ -1,0 +1,5 @@
+# Ignore dot file
+.*
+!.env
+# Ignore local module
+node_modules
