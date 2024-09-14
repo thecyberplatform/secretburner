@@ -66,6 +66,13 @@ class HandleRetrieveSecretTest(APITestCase):
             passphrase_hash=make_password("test-passphrase"),
         )
 
+        self.secret_no_passphrase = Secret.objects.create(
+            secret_id=str(uuid4()),
+            secret_text="This is a test secret",
+            expiry_seconds=3600,
+            burn_at=int(time.time()) + 3600,
+        )
+
         self.secret_with_public_key = Secret.objects.create(
             secret_id=str(uuid4()),
             secret_text="This is a test secret",
@@ -256,3 +263,54 @@ class HandleRetrieveSecretTest(APITestCase):
         self.assertIn("pki_encrypted", response.data)
         self.assertEqual(response.data["secret_text"], self.secret.secret_text)
         self.assertEqual(response.data["pki_encrypted"], True)
+
+    def test_09_retrieve_secret_check_success_without_passphrase(self):
+        # API request payload for retrieving the secret
+        payload = {"secret_id": self.secret_no_passphrase.secret_id}
+
+        # Reverse the correct URL for retrieving the secret
+        url = reverse("api:secret:handle_retrieve_secret_check")
+        response = self.client.post(url, payload, format="json")
+
+        # Assert that the response status is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the response contains the passphrase protected property and it's False
+        self.assertIn("passphrase_protected", response.data)
+        self.assertEqual(response.data["passphrase_protected"], False)
+
+        # Check if the secret was not deleted after retrieval check
+        self.assertTrue(Secret.objects.filter(secret_id=self.secret.secret_id).exists())
+
+    def test_10_retrieve_secret_check_success_with_passphrase(self):
+        # API request payload for retrieving the secret
+        payload = {"secret_id": self.secret.secret_id}
+
+        # Reverse the correct URL for retrieving the secret
+        url = reverse("api:secret:handle_retrieve_secret_check")
+        response = self.client.post(url, payload, format="json")
+
+        # Assert that the response status is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the response contains the passphrase protected property and it's True
+        self.assertIn("passphrase_protected", response.data)
+        self.assertEqual(response.data["passphrase_protected"], True)
+
+        # Check if the secret was not deleted after retrieval check
+        self.assertTrue(Secret.objects.filter(secret_id=self.secret.secret_id).exists())
+
+    def test_11_retrieve_secret_check_failure(self):
+        # API request payload for retrieving the secret
+        payload = {"secret_id": str(uuid4())}
+
+        # Reverse the correct URL for retrieving the secret
+        url = reverse("api:secret:handle_retrieve_secret_check")
+        response = self.client.post(url, payload, format="json")
+
+        # Assert that the response status is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Check that the response contains validation error for non-existent secret
+        self.assertIn("detail", response.data)
+        self.assertEqual(response.data["detail"], "secret not found")

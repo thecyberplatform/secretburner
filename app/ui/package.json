@@ -1,8 +1,8 @@
 {
   "name": "secretburner",
   "version": "0.0.1",
-  "description": "Now you see it, now you don't",
-  "productName": "SecretBurner",
+  "description": "Secure, single-use secrets that vanish after viewing.",
+  "productName": "Secret Burner",
   "author": "Trent Murray <trent@wecolabs.io>",
   "private": true,
   "scripts": {

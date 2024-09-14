@@ -86,6 +86,7 @@ export default {
   Unlike other one time secret apps; SecretBurner has a couple of distinct features:
   1. SecretBurner allows you to "request" a secret from someone.
   2. SecretBurner provides client-side encryption to prevent unencrypted data leaving your browser.
+  3. SecretBurner allows you to deliver requests and secrets via email.
 
   ### Security
 
@@ -95,6 +96,14 @@ export default {
 
   Generating a client-side encryption key pair means the secret can only be read from the same browser you created the request on. You can leave tabs and close the browser, but you must use the same browser.
 
+  SecretBurner also supports simple symmetrical encryption via passphrases. When creating a secret with a passphrase, the
+  secret will be encrypted on the client browser and sent to the server fully encrypted.
+
+  When using a passphrase to encrypt a secret, you must ensure delivery of the passphrase to the recipient in order for them
+  to retrieve and decrypt the secret.
+
+  Adding a passphrase to a request will only protect its retrieval. If you want the secret to be encrypted when it's fulfilled, you must ensure
+  end-to-end encryption is enabled when creating the request.
   `,
 
   // CreateSecretPage.vue
@@ -117,7 +126,7 @@ export default {
     'You have opted to send this secret to the recipient yourself.',
   'CreateSecret:EmailDelivery': 'We will deliver this secret for you!',
   'CreateSecret:Label:CreateNew': 'New secret',
-  'CreateSecret:Label:CreateSecret': 'Create your secret link',
+  'CreateSecret:Label:CreateSecret': 'Create your secret',
 
   // RequestSecretPage.vue
   'RequestSecret:Title': 'Request a secret from someone',
@@ -135,7 +144,7 @@ export default {
   'RequestSecret:CopyRequestLink': 'Copy request link',
   'RequestSecret:CopySecretLink': 'Copy secret link',
   'RequestSecret:NewRequest': 'New request',
-  'RequestSecret:CreateRequest': 'Create your secret request link',
+  'RequestSecret:Label:CreateRequest': 'Create your secret request',
 
   // FulfilRequestPage.vue
   'FulfilRequest:Title': 'Fulfilling secret request',
@@ -156,4 +165,6 @@ export default {
     'If you know this secret has a passphrase, enter it here.',
   'ViewSecret:CopySecret': 'Copy to clipboard',
   'ViewSecret:Reveal': 'Reveal secret',
+  'ViewSecret:Burnt':
+    'This secret has been burnt! Once you leave this page, it is irretrievable.',
 };

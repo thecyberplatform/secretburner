@@ -29,29 +29,54 @@ class TestBurnNow(TestCase):
 class TestCheckVerification(TestCase):
 
     def setUp(self):
-        self.valid_email = "test@example.com"
+        self.valid_sender_email = "sender@example.com"
+        self.valid_recipient_email = "recipient@example.com"
         self.valid_token = "valid-token"
         self.invalid_token = "invalid-token"
-        self.valid_email_hash = make_password(self.valid_email)
+        self.valid_sender_email_hash = make_password(self.valid_sender_email)
+        self.valid_recipient_email_hash = make_password(self.valid_recipient_email)
 
         # Set up a valid verification record
-        Verification.objects.create(
-            verified_token=self.valid_token, email_hash=self.valid_email_hash
+        self.verification = Verification.objects.create(
+            verified_token=self.valid_token,
+            recipient_email_hash=self.valid_recipient_email_hash,
+            sender_email_hash=self.valid_sender_email_hash,
         )
 
-    def test_check_verification_success(self):
-        result = check_verification(self.valid_token, self.valid_email)
+    def test_01_check_verification_success(self):
+        result = check_verification(
+            verified_token=self.valid_token,
+            sender_email=self.valid_sender_email,
+            recipient_email=self.valid_recipient_email,
+        )
         self.assertTrue(result)
         # Ensure the verification record is deleted
         self.assertIsNone(
             Verification.objects.filter(verified_token=self.valid_token).first()
         )
 
-    def test_check_verification_invalid_token(self):
+    def test_02_check_verification_invalid_token(self):
         with self.assertRaises(EmailVerificationError):
-            check_verification(self.invalid_token, self.valid_email)
+            check_verification(
+                self.invalid_token,
+                sender_email=self.valid_sender_email,
+                recipient_email=self.valid_recipient_email,
+            )
 
-    def test_check_verification_invalid_email(self):
-        incorrect_email = "wrong@example.com"
+    def test_03_check_verification_invalid_sender_email(self):
+        wrong_sender = "wrong@example.com"
         with self.assertRaises(EmailVerificationError):
-            check_verification(self.valid_token, incorrect_email)
+            check_verification(
+                self.valid_token,
+                sender_email=wrong_sender,
+                recipient_email=self.valid_recipient_email,
+            )
+
+    def test_04_check_verification_invalid_recipient_email(self):
+        wrong_recipient = "wrong@example.com"
+        with self.assertRaises(EmailVerificationError):
+            check_verification(
+                self.valid_token,
+                sender_email=self.valid_sender_email,
+                recipient_email=wrong_recipient,
+            )

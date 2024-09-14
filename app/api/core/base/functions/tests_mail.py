@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from .mail import send_mail, build_email_templates
+from .mail import send_mail, build_email_templates, render_and_send_mail, settings
 
 
 class EmailFunctionTests(unittest.TestCase):
@@ -36,3 +36,41 @@ class EmailFunctionTests(unittest.TestCase):
         mock_get_template.assert_any_call("html_template.html")
         mock_get_template.assert_any_call("text_template.txt")
         mock_template.render.assert_called_with({"key": "value"})
+
+
+class TestRenderAndSendMail(unittest.TestCase):
+
+    @patch("core.base.functions.mail.send_mail")
+    @patch("core.base.functions.mail.build_email_templates")
+    def test_render_and_send_mail_valid(
+        self, mock_build_email_templates, mock_send_mail
+    ):
+        # Mock the return value of build_email_templates
+        mock_build_email_templates.return_value = (
+            "<html>Content</html>",
+            "Text Content",
+        )
+
+        subject = "Test Subject"
+        template_name = "test_template"
+        context = {"key": "value"}
+        recipient_list = ["recipient@example.com"]
+
+        # Call the function
+        render_and_send_mail(subject, template_name, context, recipient_list)
+
+        # Assert build_email_templates was called with the correct arguments
+        mock_build_email_templates.assert_called_once_with(
+            html_template=f"email/html/{template_name}.html",
+            text_template=f"email/text/{template_name}.txt",
+            context=context,
+        )
+
+        # Assert send_mail was called with the correct arguments
+        mock_send_mail.assert_called_once_with(
+            subject=subject,
+            message="Text Content",
+            from_email=settings.MAILER_FROM_EMAIL,
+            recipient_list=recipient_list,
+            html_message="<html>Content</html>",
+        )

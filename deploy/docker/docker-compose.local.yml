@@ -1,10 +1,10 @@
 volumes:
-  pg_data: {}
+  pg_data: { }
 
 services:
   secretburner-ui:
     container_name: secretburner-ui
-    image: secretburner-ui:latest
+    image: secretburner/ui
     build:
       context: ../../
       dockerfile: ./deploy/docker/ui/Dockerfile
@@ -19,7 +19,7 @@ services:
 
   secretburner-api:
     container_name: secretburner-api
-    image: secretburner-api:latest
+    image: secretburner/api
     build:
       context: ../../
       dockerfile: ./deploy/docker/api/Dockerfile
@@ -39,7 +39,7 @@ services:
 
   secretburner-db:
     container_name: secretburner-db
-    image: secretburner-db:latest
+    image: secretburner/db
     build:
       context: ../..
       dockerfile: ./deploy/docker/db/Dockerfile
@@ -53,7 +53,7 @@ services:
 
   secretburner-proxy:
     container_name: secretburner-proxy
-    image: secretburner-proxy:latest
+    image: secretburner/proxy
     build:
       context: ../..
       dockerfile: ./deploy/docker/nginx/Dockerfile

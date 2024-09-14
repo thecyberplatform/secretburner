@@ -29,6 +29,15 @@
             <div class="col">
               <div class="row q-col-gutter-md flex items-center justify-center">
                 <div class="col">
+                  <q-banner class="bg-red text-white text-weight-bold">
+                    {{ $t('ViewSecret:Burnt') }}
+                  </q-banner>
+                </div>
+              </div>
+              <div
+                class="row q-col-gutter-md flex items-center justify-center q-mt-sm"
+              >
+                <div class="col">
                   <q-card flat bordered class="bg-teal-9 text-white">
                     <q-list>
                       <q-item clickable @click="setClipboard(secretText)">
@@ -66,11 +75,12 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onBeforeMount, ref } from 'vue';
   import { useSecret } from 'src/composables/useSecret';
   import { Dialog, LocalStorage } from 'quasar';
   import { useCryptography } from 'src/composables/useCryptography';
   import { useBrowserUtils } from 'src/composables/useBrowserUtils';
+  import { useRouter } from 'vue-router';
 
   defineOptions({
     name: 'ViewSecretPage',
@@ -92,8 +102,24 @@
     burnAt,
     passphraseEncrypted,
     pkiEncrypted,
+    checkSecret,
+    passphraseProtected,
   } = useSecret();
   const { importPrivateKeyPem, decryptData, simpleDecrypt } = useCryptography();
+
+  const router = useRouter();
+
+  onBeforeMount(async () => {
+    await checkSecret();
+
+    if (passphraseProtected.value === undefined) {
+      await router.push({ name: 'index' });
+    }
+
+    if (passphraseProtected.value === false) {
+      await callBurnSecret();
+    }
+  });
 
   const callBurnSecret = async () => {
     await burnSecret(passphrase.value);

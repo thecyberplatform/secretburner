@@ -1,5 +1,6 @@
 export interface EmailVerifyRequestIn {
-  toEmail: string;
+  senderEmail: string;
+  recipientEmail: string;
 }
 
 export interface EmailVerifyRequestOut {

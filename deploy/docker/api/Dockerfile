@@ -13,7 +13,6 @@ ARG pip_requirement_file
 RUN apk update \
     && apk add --no-cache \
         build-base \
-        postgresql-dev \
         gcc \
         musl-dev \
     && apk add --no-cache --virtual .build-deps gcc musl-dev libffi-dev \

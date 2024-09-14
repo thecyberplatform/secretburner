@@ -19,8 +19,8 @@ class RequestIn(BaseSerializer):
     expiry_seconds = serializers.IntegerField(min_value=60)
     passphrase = serializers.CharField(max_length=500, required=False)
     public_key = serializers.CharField(max_length=4096, required=False)
-    to_email = serializers.EmailField(required=False)
-    from_email = serializers.EmailField(required=False)
+    recipient_email = serializers.EmailField(required=False)
+    sender_email = serializers.EmailField(required=False)
     verified_token = serializers.CharField(required=False)
 
     def is_valid(self, raise_exception=False):
@@ -32,7 +32,7 @@ class RequestIn(BaseSerializer):
         request_url = f"{settings.UI_HOSTNAME}{settings.UI_FULFIL_REQUEST_URI}{validated_data.get('request_id')}"
 
         self.send_verified_email(
-            context_from_serializer=["from_email"],
+            context_from_serializer=["sender_email"],
             additional_context={"request_url": request_url},
             template_name="secret-request",
             subject="Secret Burner: Somebody is requesting a secret from you",
@@ -80,8 +80,8 @@ class RequestFulfilmentIn(BaseSerializer):
     request_id = serializers.CharField(max_length=40)
     fulfilment_id = serializers.CharField(max_length=40)
     secret_text = serializers.CharField(max_length=512000)
-    to_email = serializers.EmailField(required=False)
-    from_email = serializers.EmailField(required=False)
+    recipient_email = serializers.EmailField(required=False)
+    sender_email = serializers.EmailField(required=False)
     verified_token = serializers.CharField(required=False)
 
     def update(self, instance: Secret, validated_data):
@@ -89,7 +89,7 @@ class RequestFulfilmentIn(BaseSerializer):
         instance.save()
 
         self.send_verified_email(
-            context_from_serializer=["from_email"],
+            context_from_serializer=["sender_email"],
             template_name="request-fulfilled",
             subject="Secret Burner: Your secret request has been fulfilled",
         )

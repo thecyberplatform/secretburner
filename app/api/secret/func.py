@@ -8,15 +8,18 @@ def burn_now(burn_at: int):
     return burn_at < timezone.now().timestamp()
 
 
-def check_verification(verified_token: str, email: str):
+def check_verification(verified_token: str, sender_email: str, recipient_email: str):
     verification = Verification.objects.filter(verified_token=verified_token).first()
 
     # make sure this token is valid.
     if not verification:
         raise EmailVerificationError("email verification failed")
 
-    # ensure the email address that we validated is what was eventually sent to us as the "sender"
-    if not check_password(email, verification.email_hash):
+    # ensure the email is only sent to the correct recipient and from the verified sender.
+    if not check_password(sender_email, verification.sender_email_hash):
+        raise EmailVerificationError("email verification failed")
+
+    if not check_password(recipient_email, verification.recipient_email_hash):
         raise EmailVerificationError("email verification failed")
 
     # Get rid of this now. It's used.

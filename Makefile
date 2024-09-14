@@ -61,7 +61,7 @@ help:
 	@echo  "@example :  make vulnScan"
 
 up:
-	docker-compose -f deploy/docker/docker-compose.local.yml up -d --force-recreate $(apps)
+	docker-compose -f deploy/docker/docker-compose.local.yml up -d --force-recreate --remove-orphans $(apps)
 
 down:
 	docker-compose -f deploy/docker/docker-compose.local.yml down
@@ -88,6 +88,7 @@ apiTest:
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-api python manage.py test -v 3 $(mod)
 
 pyCoverage:
+	docker-compose -f deploy/docker/docker-compose.local.yml up -d
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-api rm -rf /app/coverage/
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-api coverage run --source='/app/' /app/manage.py test -v 3
 

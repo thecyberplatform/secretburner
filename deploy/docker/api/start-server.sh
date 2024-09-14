@@ -8,7 +8,7 @@ if [[ "${APP_ENV}" != "local" ]]; then
 
     python /app/manage.py migrate &&
     python /app/manage.py createcachetable &&
-    daphne -p 8000 config.asgi:application
+    daphne -p 80 -b 0.0.0.0 config.asgi:application
 
 else
     echo "Starting Local Run Server"

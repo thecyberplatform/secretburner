@@ -12,8 +12,8 @@ class HandleStoreRequestTest(APITestCase):
         # API request payload
         payload = {
             "expiry_seconds": 3600,
-            "from_email": "sender@example.com",
-            "to_email": "recipient@example.com",
+            "sender_email": "sender@example.com",
+            "recipient_email": "recipient@example.com",
         }
 
         url = reverse("api:request:handle_store_request")
@@ -34,8 +34,8 @@ class HandleStoreRequestTest(APITestCase):
         # API request payload with invalid expiry_seconds
         payload = {
             "expiry_seconds": 30,  # less than min_value 60
-            "from_email": "sender@example.com",
-            "to_email": "recipient@example.com",
+            "sender_email": "sender@example.com",
+            "recipient_email": "recipient@example.com",
         }
 
         url = reverse("api:request:handle_store_request")

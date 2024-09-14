@@ -2,7 +2,7 @@
   <div class="row justify-evenly q-col-gutter-md">
     <div class="col">
       <q-card bordered flat>
-        <q-card-section class="text-body1">
+        <q-card-section class="text-body2">
           <q-markdown>
             {{ $t('AboutPage:Body') }}
           </q-markdown>

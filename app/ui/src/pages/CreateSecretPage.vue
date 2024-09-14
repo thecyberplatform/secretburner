@@ -271,8 +271,8 @@
   } = useSecret();
 
   const verifiedEmail: Ref<IVerifiedEmail> = ref({
-    toEmail: undefined,
-    fromEmail: undefined,
+    recipientEmail: undefined,
+    senderEmail: undefined,
     verifiedToken: undefined,
   });
 
@@ -283,8 +283,8 @@
 
   const submitCreateSecret = () => {
     createSecret(
-      verifiedEmail.value.toEmail,
-      verifiedEmail.value.fromEmail,
+      verifiedEmail.value.recipientEmail,
+      verifiedEmail.value.senderEmail,
       verifiedEmail.value.verifiedToken
     );
   };

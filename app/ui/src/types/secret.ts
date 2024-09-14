@@ -4,8 +4,8 @@ export interface SecretIn {
   accountId?: string;
   passphrase?: string;
   publicKey?: string;
-  toEmail?: string;
-  fromEmail?: string;
+  recipientEmail?: string;
+  senderEmail?: string;
   verifiedToken?: string;
 }
 
@@ -26,4 +26,12 @@ export interface SecretRetrieveOut {
   burnAt: number;
   passphraseEncrypted: boolean;
   pkiEncrypted: boolean;
+}
+
+export interface SecretRetrieveCheckIn {
+  secretId: string;
+}
+
+export interface SecretRetrieveCheckOut {
+  passphraseProtected: boolean;
 }

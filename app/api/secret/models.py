@@ -32,7 +32,8 @@ class Verification(models.Model):
     burn_at = models.BigIntegerField(db_index=True)
     code = models.TextField(max_length=20, db_index=True)
     verified_token = models.TextField(null=True, db_index=True)
-    email_hash = models.TextField(null=False, db_index=True)
+    sender_email_hash = models.TextField(null=False)
+    recipient_email_hash = models.TextField(null=False)
 
     def save(self, *args, **kwargs):
         if not self.burn_at:

@@ -12,7 +12,7 @@
           <div class="row q-col-gutter-md q-mt-md">
             <div class="col">
               <q-input
-                v-model="verifyEmail"
+                v-model="senderEmail"
                 outlined
                 dense
                 :label="$t('Global:Label:YourEmail')"
@@ -92,7 +92,7 @@
 
   const {
     recipientEmail,
-    verifyEmail,
+    senderEmail,
     createVerifyRequest,
     verifyCode,
     verifyEmailRequest,
@@ -118,8 +118,8 @@
     if (verifiedOk.value) {
       emit('update:modelValue', {
         verifiedToken: verifiedToken.value,
-        toEmail: recipientEmail.value,
-        fromEmail: verifyEmail.value,
+        recipientEmail: recipientEmail.value,
+        senderEmail: senderEmail.value,
       });
     }
   };

@@ -3,8 +3,8 @@ export interface SecretRequestIn {
   passphrase?: string;
   publicKey?: string;
   verifiedToken?: string;
-  toEmail?: string;
-  fromEmail?: string;
+  recipientEmail?: string;
+  senderEmail?: string;
 }
 
 export interface SecretRequestOut {
@@ -28,8 +28,8 @@ export interface SecretRequestFulfilmentIn {
   fulfilmentId: string;
   secretText: string;
   verifiedToken?: string;
-  toEmail?: string;
-  fromEmail?: string;
+  recipientEmail?: string;
+  senderEmail?: string;
 }
 
 export interface SecretRequestFulfilmentOut {

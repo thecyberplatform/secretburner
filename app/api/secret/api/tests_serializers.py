@@ -12,18 +12,18 @@ from secret.api.serializers import (
 class BaseSerializerTest(APITestCase):
 
     def test_01_is_valid_processes_fields_correctly(self):
-        # Test that the fields 'from_email', 'to_email', and 'verified_token' are correctly processed
+        # Test that the fields 'sender_email', 'recipient_email', and 'verified_token' are correctly processed
         data = {
-            "from_email": "from@example.com",
-            "to_email": "to@example.com",
+            "sender_email": "from@example.com",
+            "recipient_email": "to@example.com",
             "verified_token": "some-token",
         }
 
         serializer = BaseSerializer(data=data)
         self.assertTrue(serializer.is_valid())
 
-        self.assertEqual(serializer._from_email, "from@example.com")
-        self.assertEqual(serializer._to_email, "to@example.com")
+        self.assertEqual(serializer._sender_email, "from@example.com")
+        self.assertEqual(serializer._recipient_email, "to@example.com")
         self.assertEqual(serializer._verified_token, "some-token")
 
     def test_02_handle_passphrase(self):
@@ -40,27 +40,24 @@ class BaseSerializerTest(APITestCase):
             check_password("my_secret_passphrase", result["passphrase_hash"])
         )
 
-    @patch("secret.api.serializers.settings")
-    @patch("secret.api.serializers.send_mail")
-    @patch("secret.api.serializers.build_email_templates")
+    @patch("core.base.functions.mail.settings")
+    @patch("secret.api.serializers.render_and_send_mail")
     @patch("secret.api.serializers.check_verification")
     def test_03_send_verified_email_success(
         self,
         mock_check_verification,
-        mock_build_email_templates,
-        mock_send_mail,
+        mock_render_and_send_mail,
         mock_settings,
     ):
         # Test that email sending works when verification passes
         mock_settings.ALLOW_EMAIL = True
         mock_check_verification.return_value = True
-        mock_build_email_templates.return_value = (
-            "<html>Email</html>",
-            "Plain text email",
-        )
 
         # Provide initial data that would simulate the request payload
-        initial_data = {"from_email": "from@example.com", "to_email": "to@example.com"}
+        initial_data = {
+            "sender_email": "sender@example.com",
+            "recipient_email": "recipient@example.com",
+        }
 
         serializer = BaseSerializer(data=initial_data)
 
@@ -71,23 +68,22 @@ class BaseSerializerTest(APITestCase):
         serializer.send_verified_email(
             template_name="test-template",
             subject="Test Subject",
-            context_from_serializer=["from_email", "an_unknown_key"],
+            context_from_serializer=["sender_email", "an_unknown_key"],
             additional_context={"extra_context": "extra_value"},
         )
 
         # Ensure email verification was called
         mock_check_verification.assert_called_once_with(
-            verified_token=None, email="from@example.com"
+            verified_token=None,
+            sender_email="sender@example.com",
+            recipient_email="recipient@example.com",
         )
 
-        # Ensure email templates were built
-        mock_build_email_templates.assert_called_once()
-
         # Ensure the email was sent
-        mock_send_mail.assert_called_once()
+        mock_render_and_send_mail.assert_called_once()
 
-    @patch("secret.api.serializers.settings")
-    @patch("secret.api.serializers.send_mail")
+    @patch("core.base.functions.mail.settings")
+    @patch("core.base.functions.mail.render_and_send_mail")
     @patch(
         "secret.api.serializers.check_verification",
         side_effect=EmailVerificationError("Verification failed"),
@@ -98,13 +94,13 @@ class BaseSerializerTest(APITestCase):
         # Test that the email is not sent if verification fails
         mock_settings.ALLOW_EMAIL = True
         serializer = BaseSerializer()
-        serializer._from_email = "from@example.com"
-        serializer._to_email = "to@example.com"
+        serializer._sender_email = "from@example.com"
+        serializer._recipient_email = "to@example.com"
 
         serializer.send_verified_email(
             template_name="test-template",
             subject="Test Subject",
-            context_from_serializer=["from_email"],
+            context_from_serializer=["sender_email"],
             additional_context={"extra_context": "extra_value"},
         )
 
@@ -118,22 +114,22 @@ class BaseSerializerTest(APITestCase):
         self.assertEqual(serializer.get_email_response(), "Verification failed")
 
     @patch("secret.api.serializers.check_verification")
-    @patch("secret.api.serializers.settings")
-    @patch("secret.api.serializers.send_mail")
+    @patch("core.base.functions.mail.settings")
+    @patch("core.base.functions.mail.render_and_send_mail")
     def test_05_invalid_characters_in_template(
         self, mock_send_mail, mock_settings, mock_check_verification
     ):
         mock_settings.ALLOW_EMAIL = True
         mock_check_verification.return_value = True
         serializer = BaseSerializer()
-        serializer._from_email = "from@example.com"
-        serializer._to_email = "to@example.com"
+        serializer._sender_email = "from@example.com"
+        serializer._recipient_email = "to@example.com"
 
         try:
             serializer.send_verified_email(
                 template_name="test-template##",
                 subject="Test Subject",
-                context_from_serializer=["from_email"],
+                context_from_serializer=["sender_email"],
                 additional_context={"extra_context": "extra_value"},
             )
         except Exception as e:

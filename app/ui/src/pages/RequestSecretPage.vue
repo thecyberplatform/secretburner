@@ -315,8 +315,8 @@
   const { setClipboard, storeLocally } = useBrowserUtils();
 
   const verifiedEmail: Ref<IVerifiedEmail> = ref({
-    toEmail: undefined,
-    fromEmail: undefined,
+    recipientEmail: undefined,
+    senderEmail: undefined,
     verifiedToken: undefined,
   });
 
@@ -350,8 +350,8 @@
     await createSecretRequest(
       publicKey.value,
       verifiedEmail.value.verifiedToken,
-      verifiedEmail.value.toEmail,
-      verifiedEmail.value.fromEmail
+      verifiedEmail.value.recipientEmail,
+      verifiedEmail.value.senderEmail
     );
     if (privateKey.value) {
       storeLocally(`sbpvk:${secretId.value}:${burnAt.value}`, privateKey.value);

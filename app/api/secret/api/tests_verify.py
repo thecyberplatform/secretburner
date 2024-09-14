@@ -9,14 +9,14 @@ from uuid import uuid4
 
 class HandleRequestVerificationTest(APITestCase):
 
-    @patch("secret.api.serializers.settings")
+    @patch("core.base.functions.mail.settings")
     @patch("core.base.functions.crypto.RandomStringGenerator.generate")
-    @patch("secret.api.serializers.send_mail")
-    @patch("secret.api.serializers.build_email_templates")
+    @patch("core.base.functions.mail.build_email_templates")
+    @patch("secret.api.verify.render_and_send_mail")
     def test_01_request_verification_success(
         self,
-        mock_build_email_templates,
         mock_send_mail,
+        mock_build_email_templates,
         mock_random_string,
         mock_settings,
     ):
@@ -29,7 +29,10 @@ class HandleRequestVerificationTest(APITestCase):
         )
 
         # API request payload for requesting email verification
-        payload = {"to_email": "recipient@example.com"}
+        payload = {
+            "recipient_email": "recipient@example.com",
+            "sender_email": "sender@example.com",
+        }
 
         # Send POST request to request verification
         url = reverse("api:verify:handle_request_verification")
@@ -41,7 +44,10 @@ class HandleRequestVerificationTest(APITestCase):
         # Ensure that a Verification object was created
         verification = Verification.objects.get()
         self.assertTrue(
-            check_password("recipient@example.com", verification.email_hash)
+            check_password("recipient@example.com", verification.recipient_email_hash)
+        )
+        self.assertTrue(
+            check_password("sender@example.com", verification.sender_email_hash)
         )
         self.assertEqual(verification.code, "123456")
 
@@ -61,7 +67,10 @@ class HandleRequestVerificationTest(APITestCase):
 
         # Assert the correct error message is returned
         self.assertIn("detail", response.data)
-        self.assertEqual(response.data["detail"], "no email address to verify.")
+        self.assertEqual(
+            response.data["detail"],
+            "sender_email: This field is required. recipient_email: This field is required.",
+        )
 
 
 class HandleVerifyRequestTest(APITestCase):
@@ -71,7 +80,8 @@ class HandleVerifyRequestTest(APITestCase):
         self.verification = Verification.objects.create(
             verify_id=str(uuid4()),
             code="123456",
-            email_hash=make_password("recipient@example.com"),
+            recipient_email_hash=make_password("recipient@example.com"),
+            sender_email_hash=make_password("sender@example.com"),
         )
 
     @patch("core.base.functions.crypto.RandomStringGenerator.generate")

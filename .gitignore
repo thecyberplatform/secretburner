@@ -12,6 +12,7 @@ __pycache__
 admin_static/
 static/
 media/
+docs/
 
 # Testing
 .coverage

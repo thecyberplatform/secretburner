@@ -113,8 +113,8 @@
 
     await fulfilSecretRequest(
       verifiedEmail.value.verifiedToken,
-      verifiedEmail.value.toEmail,
-      verifiedEmail.value.fromEmail
+      verifiedEmail.value.recipientEmail,
+      verifiedEmail.value.senderEmail
     );
   }
 </script>

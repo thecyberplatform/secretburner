@@ -1,8 +1,8 @@
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
 
+from core.base.functions.mail import render_and_send_mail
 from secret.models import Verification
 from secret.api.serializers import BaseSerializer
 from django.urls import re_path
@@ -10,30 +10,36 @@ from core.base.functions.crypto import RandomStringGenerator
 from django.contrib.auth.hashers import make_password
 
 
-class VerifyEmailRequestIn(BaseSerializer):
-    to_email = serializers.EmailField(max_length=500, required=False)
+class VerifyEmailRequestIn(serializers.Serializer):
+    sender_email = serializers.EmailField(max_length=500)
+    recipient_email = serializers.EmailField(max_length=500)
 
     def create(self, validated_data):
-        if self._to_email:
-            generator = RandomStringGenerator(
-                length=6, include_alpha=False, include_symbols=False
-            )
-            code = generator.generate()
+        generator = RandomStringGenerator(
+            length=6, include_alpha=False, include_symbols=False
+        )
+        code = generator.generate()
 
-            verification = Verification.objects.create(
-                code=code, email_hash=make_password(self._to_email)
-            )
+        verification = Verification.objects.create(
+            code=code,
+            sender_email_hash=make_password(self.validated_data.get("sender_email")),
+            recipient_email_hash=make_password(
+                self.validated_data.get("recipient_email")
+            ),
+        )
 
-            self.send_verified_email(
-                additional_context={"code": code},
-                template_name="verify-email",
-                subject="Secret Burner: Please verify your email",
-                bypass_verification_check=True,
-            )
+        render_and_send_mail(
+            subject="Secret Burner: Please verify your email",
+            context={
+                "code": code,
+                "sender_email": self.validated_data.get("sender_email"),
+                "recipient_email": self.validated_data.get("recipient_email"),
+            },
+            template_name="verify-email",
+            recipient_list=[self.validated_data.get("sender_email")],
+        )
 
-            return verification
-        else:
-            raise ValidationError("no email address to verify.")
+        return verification
 
 
 class VerifyEmailRequestOut(BaseSerializer):

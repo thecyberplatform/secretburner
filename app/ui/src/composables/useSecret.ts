@@ -10,12 +10,15 @@ import { Dialog, Notify } from 'quasar';
 import {
   SecretIn,
   SecretOut,
+  SecretRetrieveCheckIn,
+  SecretRetrieveCheckOut,
   SecretRetrieveIn,
   SecretRetrieveOut,
 } from 'src/types/secret';
 
 import {
   SecretRequestFulfilmentIn,
+  SecretRequestFulfilmentOut,
   SecretRequestFulfilmentRetrievalIn,
   SecretRequestFulfilmentRetrievalOut,
   SecretRequestIn,
@@ -36,6 +39,7 @@ export const useSecret = () => {
 
   const passphrase: Ref<string | undefined> = ref();
   const confirmPassphrase: Ref<string | undefined> = ref();
+  const passphraseProtected: Ref<boolean | undefined> = ref();
 
   const requestLink: Ref<string | undefined> = ref();
   const requestPublicKey: Ref<string | undefined> = ref();
@@ -130,8 +134,8 @@ export const useSecret = () => {
   };
 
   const createSecret = async (
-    toEmail?: string,
-    fromEmail?: string,
+    recipientEmail?: string,
+    senderEmail?: string,
     verifiedToken?: string
   ): Promise<void> => {
     if (!secretText.value) {
@@ -155,8 +159,8 @@ export const useSecret = () => {
       secretText: secretText.value,
       passphrase: passphrase.value,
       expirySeconds: expiryInt.value * expiryInterval.value,
-      toEmail: toEmail,
-      fromEmail: fromEmail,
+      recipientEmail: recipientEmail,
+      senderEmail: senderEmail,
       verifiedToken: verifiedToken,
     };
 
@@ -188,16 +192,16 @@ export const useSecret = () => {
   const createSecretRequest = async (
     publicKey?: string,
     verifiedToken?: string,
-    toEmail?: string,
-    fromEmail?: string
+    recipientEmail?: string,
+    senderEmail?: string
   ): Promise<void> => {
     const payload: SecretRequestIn = {
       passphrase: undefinedIfEmpty(passphrase.value ?? ''),
       expirySeconds: expiryInt.value * expiryInterval.value,
       publicKey: publicKey,
       verifiedToken: verifiedToken,
-      toEmail: toEmail,
-      fromEmail: fromEmail,
+      recipientEmail: recipientEmail,
+      senderEmail: senderEmail,
     };
 
     const data: SecretRequestOut | null = await handleFetchResponse<
@@ -248,10 +252,31 @@ export const useSecret = () => {
     }
   };
 
+  const checkSecret = async (): Promise<void> => {
+    const uuid: string = route.params.uuid?.toString() ?? '';
+    const payload: SecretRetrieveCheckIn = {
+      secretId: uuid,
+    };
+
+    const data: SecretRetrieveCheckOut | null = await handleFetchResponse<
+      SecretRetrieveCheckIn,
+      SecretRetrieveCheckOut
+    >({
+      url: '/api/secret/check/',
+      method: 'POST',
+      json: true,
+      body: payload,
+    });
+
+    if (data) {
+      passphraseProtected.value = data.passphraseProtected;
+    }
+  };
+
   const fulfilSecretRequest = async (
     verifiedToken?: string,
-    toEmail?: string,
-    fromEmail?: string
+    recipientEmail?: string,
+    senderEmail?: string
   ): Promise<void> => {
     fulfilmentOk.value = false;
 
@@ -269,8 +294,8 @@ export const useSecret = () => {
       fulfilmentId: fulfilmentId.value,
       secretText: secretText.value,
       verifiedToken: undefinedIfEmpty(verifiedToken ?? ''),
-      toEmail: undefinedIfEmpty(toEmail ?? ''),
-      fromEmail: undefinedIfEmpty(fromEmail ?? ''),
+      recipientEmail: undefinedIfEmpty(recipientEmail ?? ''),
+      senderEmail: undefinedIfEmpty(senderEmail ?? ''),
     };
 
     if (!fulfilmentId.value) {
@@ -281,16 +306,15 @@ export const useSecret = () => {
       return;
     }
 
-    const data: SecretRequestFulfilmentRetrievalOut | null =
-      await handleFetchResponse<
-        SecretRequestFulfilmentRetrievalIn,
-        SecretRequestFulfilmentRetrievalOut
-      >({
-        url: '/api/request/fulfil/',
-        method: 'POST',
-        json: true,
-        body: payload,
-      });
+    const data: SecretRequestFulfilmentOut | null = await handleFetchResponse<
+      SecretRequestFulfilmentIn,
+      SecretRequestFulfilmentOut
+    >({
+      url: '/api/request/fulfil/',
+      method: 'POST',
+      json: true,
+      body: payload,
+    });
 
     if (data) {
       resetSecret();
@@ -347,6 +371,7 @@ export const useSecret = () => {
     fulfilSecretRequest,
     createSecret,
     burnSecret,
+    checkSecret,
 
     // error handling
     errorMessage,
@@ -366,6 +391,7 @@ export const useSecret = () => {
     fulfilmentOk,
     passphraseEncrypted,
     pkiEncrypted,
+    passphraseProtected,
 
     // lookups and local handling
     expiry,

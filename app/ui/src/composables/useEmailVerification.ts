@@ -13,8 +13,8 @@ import { useBrowserUtils } from 'src/composables/useBrowserUtils';
 
 export interface IVerifiedEmail {
   verifiedToken?: string;
-  toEmail?: string;
-  fromEmail?: string;
+  recipientEmail?: string;
+  senderEmail?: string;
 }
 
 export type EmailVerificationEvents = {
@@ -24,7 +24,7 @@ export type EmailVerificationEvents = {
 export const useEmailVerification = () => {
   const recipientEmail = ref();
 
-  const verifyEmail: Ref<string | undefined> = ref();
+  const senderEmail: Ref<string | undefined> = ref();
   const verifyId: Ref<string | undefined> = ref();
   const verifyCode: Ref<string | undefined> = ref();
 
@@ -42,7 +42,7 @@ export const useEmailVerification = () => {
 
   const createVerifyRequest = async (): Promise<void> => {
     loadingRequestVerification.value = true;
-    if (!verifyEmail.value) {
+    if (!senderEmail.value || !recipientEmail.value) {
       Dialog.create({
         title: $t('Global:Label:ValidationError'),
         message: $t('Global:Validation:VerifyEmail'),
@@ -53,7 +53,10 @@ export const useEmailVerification = () => {
       return;
     }
 
-    const payload: EmailVerifyRequestIn = { toEmail: verifyEmail.value };
+    const payload: EmailVerifyRequestIn = {
+      senderEmail: senderEmail.value,
+      recipientEmail: recipientEmail.value,
+    };
 
     const data: EmailVerifyRequestOut | null = await handleFetchResponse<
       EmailVerifyRequestIn,
@@ -121,7 +124,8 @@ export const useEmailVerification = () => {
   };
 
   const resetVerification = () => {
-    verifyEmail.value = undefined;
+    senderEmail.value = undefined;
+    recipientEmail.value = undefined;
 
     verifyId.value = undefined;
     verifyCode.value = undefined;
@@ -137,8 +141,8 @@ export const useEmailVerification = () => {
 
   const allowVerify = computed(() => {
     return !!(
-      verifyEmail.value &&
-      isValidEmail(verifyEmail.value) &&
+      senderEmail.value &&
+      isValidEmail(senderEmail.value) &&
       isValidEmail(recipientEmail.value)
     );
   });
@@ -152,7 +156,7 @@ export const useEmailVerification = () => {
     verifyId,
     verifiedToken,
     verifyCode,
-    verifyEmail,
+    senderEmail,
     verifiedOk,
     recipientEmail,
 
