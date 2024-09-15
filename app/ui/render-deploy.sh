@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-npm install -g @quasar/cli
-export PATH="$(npm bin -g):$PATH"
+yarn global add @quasar/cli
+export PATH="$(yarn global bin):$PATH"
 
-npm install
+yarn install
 
 quasar build
