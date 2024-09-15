@@ -40,38 +40,39 @@ class BaseSerializer(Serializer):
         additional_context=None,
     ):
         try:
-            # this can raise an EmailVerificationError
-            verified = check_verification(
-                verified_token=self._verified_token,
-                sender_email=self._sender_email,
-                recipient_email=self._recipient_email,
-            )
-
-            if all([self._recipient_email, self._sender_email, verified]):
-                # start building up the context
-                final_context = {}
-
-                if context_from_serializer:
-                    for key in context_from_serializer:
-                        # we have two special fields in this serializer: see is_valid() override.
-                        if key in self._allowed_context:
-                            final_context[key] = self._allowed_context[key]
-
-                        # don't raise an error, just set the key to None.
-                        else:
-                            final_context[key] = None
-
-                if additional_context:
-                    final_context = final_context | additional_context
-
-                render_and_send_mail(
-                    subject=subject,
-                    template_name=template_name,
-                    context=final_context,
-                    recipient_list=[self._recipient_email],
+            if all([self._recipient_email, self._sender_email]):
+                # this can raise an EmailVerificationError
+                verified = check_verification(
+                    verified_token=self._verified_token,
+                    sender_email=self._sender_email,
+                    recipient_email=self._recipient_email,
                 )
 
-                self.set_email_response("ok")
+                if verified:
+                    # start building up the context
+                    final_context = {}
+
+                    if context_from_serializer:
+                        for key in context_from_serializer:
+                            # we have two special fields in this serializer: see is_valid() override.
+                            if key in self._allowed_context:
+                                final_context[key] = self._allowed_context[key]
+
+                            # don't raise an error, just set the key to None.
+                            else:
+                                final_context[key] = None
+
+                    if additional_context:
+                        final_context = final_context | additional_context
+
+                    render_and_send_mail(
+                        subject=subject,
+                        template_name=template_name,
+                        context=final_context,
+                        recipient_list=[self._recipient_email],
+                    )
+
+                    self.set_email_response("ok")
 
         except EmailVerificationError as e:
             self.set_email_response(str(e))
