@@ -39,3 +39,6 @@ RUN chown nobody:nogroup /start-server.sh
 
 # Switch to a non-root user
 USER nobody
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/start-server.sh"]
