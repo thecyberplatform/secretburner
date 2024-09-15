@@ -8,7 +8,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY ./app/api/config/requirements /requirements
-ARG pip_requirement_file
 
 RUN apk update \
     && apk add --no-cache \
@@ -16,7 +15,7 @@ RUN apk update \
         gcc \
         musl-dev \
     && apk add --no-cache --virtual .build-deps gcc musl-dev libffi-dev \
-    && pip install --no-cache-dir -r /requirements/$pip_requirement_file \
+    && pip install --no-cache-dir -r /requirements/production.txt \
     && apk del .build-deps
 
 # Copy requirements and install local one
