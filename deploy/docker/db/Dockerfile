@@ -10,8 +10,6 @@ RUN apt-get update && \
     postgresql-$PG_VERSION-cron && \
     rm -rf /var/lib/apt/lists/*
 
-ARG cron_db
-
 # Add pg_cron to the shared_preload_libraries
 RUN echo "shared_preload_libraries = 'pg_cron'" >> /usr/share/postgresql/postgresql.conf.sample
-RUN echo "cron.database_name='${cron_db}'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "cron.database_name='secretburner'" >> /usr/share/postgresql/postgresql.conf.sample
