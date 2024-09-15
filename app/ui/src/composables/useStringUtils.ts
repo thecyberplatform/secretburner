@@ -60,6 +60,17 @@ export const useStringUtils = () => {
     if (!ifTrue) {
       return text;
     }
+
+    // Handle specific irregular plurals first
+    const irregularPlurals: { [key: string]: string } = {
+      minutes: 'minute',
+    };
+
+    if (irregularPlurals[text]) {
+      return irregularPlurals[text];
+    }
+
+    // Handle general pluralization rules
     if (text.endsWith('ies')) {
       return text.slice(0, -3) + 'y'; // e.g., 'cities' -> 'city'
     }
@@ -69,6 +80,7 @@ export const useStringUtils = () => {
     if (text.endsWith('s')) {
       return text.slice(0, -1); // e.g., 'cats' -> 'cat'
     }
+
     return text;
   }
 
