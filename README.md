@@ -46,9 +46,7 @@ app/
             templates/ - Templates for emailing
         config/ - This is where the settings, requirements and ROOT_URLS entrypoint live.
 deploy/
-    aws/ - Terraform files for deploying into a default VPC on ECS with S3 for static UI website.
     docker/ - Files necessary to build the project locally on docker using Docker Compose.
-    render/ - Deployment files for render.com
         
 ```
 
@@ -96,4 +94,15 @@ Once it's done, you should be able to navigate to http://localhost and start cre
 
 # Production deployment
 
-TBC - This is still work in progress.
+Given there is no right way to deploy any application, I will not be providing instructions on production deployment of
+this product.
+
+https://secretburner.com is deployed on render.com - with the following setup:
+
+- One Private Service (root level context, build the deploy/docker/db/Dockerfile)
+- One Web Service (point to app/api changes)
+- One Static Website (point to app/ui changes) - use the render-deploy.sh command.
+    - Add rewrite rules to /api/* > https://your-web-service.onrender.com /api/*
+    - Add security headers as necessary.
+
+I put Cloudflare in front for DDoS protection; and use SendGrid for emailing. 
