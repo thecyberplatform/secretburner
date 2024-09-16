@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.12.6-alpine3.20
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -8,6 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY ./app/api/config/requirements /requirements
+ARG APP_ENV
 
 RUN apk update \
     && apk add --no-cache \
@@ -15,7 +16,7 @@ RUN apk update \
         gcc \
         musl-dev \
     && apk add --no-cache --virtual .build-deps gcc musl-dev libffi-dev \
-    && pip install --no-cache-dir -r /requirements/production.txt \
+    && pip install --no-cache-dir -r /requirements/$APP_ENV.txt \
     && apk del .build-deps
 
 # Copy requirements and install local one

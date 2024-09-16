@@ -4,7 +4,7 @@ volumes:
 services:
   secretburner-ui:
     container_name: secretburner-ui
-    image: secretburner/ui
+    image: secretburner-ui
     build:
       context: ../../
       dockerfile: ./deploy/docker/ui/Dockerfile
@@ -19,12 +19,12 @@ services:
 
   secretburner-api:
     container_name: secretburner-api
-    image: secretburner/api
+    image: secretburner-api
     build:
       context: ../../
       dockerfile: ./deploy/docker/api/Dockerfile
       args:
-        pip_requirement_file: local.txt
+        APP_ENV: local
     depends_on:
       - secretburner-db
     ports:
@@ -39,7 +39,7 @@ services:
 
   secretburner-db:
     container_name: secretburner-db
-    image: secretburner/db
+    image: secretburner-db
     build:
       context: ../..
       dockerfile: ./deploy/docker/db/Dockerfile
@@ -53,7 +53,7 @@ services:
 
   secretburner-proxy:
     container_name: secretburner-proxy
-    image: secretburner/proxy
+    image: secretburner-proxy
     build:
       context: ../..
       dockerfile: ./deploy/docker/nginx/Dockerfile

@@ -2,9 +2,17 @@
 
 Secure, single-use secrets that vanish after viewing.
 
+You can use secret burner free @ https://secretburner.com/
+
+There is currently a limit of 20 requests per endpoint per hour. Once I hit my funding target of
+AU$2,100, I will be able to remove these limits.
+
+You can help me fund this service until October, 2025 by contributing here:
+
 # Technical Details
 
 Secret Burner has been built on a core stack of open source technologies:
+
 ```
 - API : Django (https://djangoproject.com)
 - UI  : Quasar (https://quasar.dev)
@@ -46,11 +54,11 @@ deploy/
 
 ## Principles
 
-The project is structured such that functionality is largely contained. 
+The project is structured such that functionality is largely contained.
 
 # Makefile
 
-This project has a customised Makefile to provide shortcuts to otherwise long commands. 
+This project has a customised Makefile to provide shortcuts to otherwise long commands.
 
 To get acquainted with all the available commands, simply run `make help`.
 
@@ -67,7 +75,7 @@ In each "app", you will need to rename the .example.env file to .env
 
 Change any settings that you want, or leave them blank if they are marked as optional.
 
-All environment variables are described. You should never need to modify configuration/setting files inside 
+All environment variables are described. You should never need to modify configuration/setting files inside
 the apps - all default user controllable features can be managed from .env files.
 
 ### Install docker
@@ -81,6 +89,7 @@ To run secret burner, navigate back to the root of this project, and using the t
 ```bash
 make up
 ```
+
 This will build all the services needed to run the whole application. Just like magic.
 
 Once it's done, you should be able to navigate to http://localhost and start creating secrets!

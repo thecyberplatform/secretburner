@@ -33,6 +33,10 @@ help:
 	@echo  "@example :  make apiTest"
 	@echo  "@example :  make apiTest mod=\"secret.tests\""
 	@echo  ""
+	@echo  "@command :  make apiCoverage"
+	@echo  "@desc    :  Runs Python coverage on the API generating HTML output in app/api/coverage/ folder."
+	@echo  "@example :  make apiCoverage"
+	@echo  ""
 	@echo  "@command :  make npmi"
 	@echo  "@desc    :  Runs NPM install on the UI service."
 	@echo  "@example :  make npmi"
@@ -52,13 +56,10 @@ help:
 	@echo  "@example :  make npmfix"
 	@echo  "@example :  make npmfix args=\"--force\""
 	@echo  ""
-	@echo  "@command :  make packageUI"
+	@echo  "@command :  make buildui"
 	@echo  "@desc    :  Builds a deployable distribution of the UI service."
-	@echo  "@example :  make packageUI"
+	@echo  "@example :  make buildui"
 	@echo  ""
-	@echo  "@command :  make vulnScan"
-	@echo  "@desc    :  Runs Trivy vulnerability scanner on all docker-compose services."
-	@echo  "@example :  make vulnScan"
 
 up:
 	docker-compose -f deploy/docker/docker-compose.local.yml up -d --force-recreate --remove-orphans $(apps)
@@ -87,12 +88,10 @@ apiRun:
 apiTest:
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-api python manage.py test -v 3 $(mod)
 
-pyCoverage:
+apiCoverage:
 	docker-compose -f deploy/docker/docker-compose.local.yml up -d
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-api rm -rf /app/coverage/
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-api coverage run --source='/app/' /app/manage.py test -v 3
-
-pyCoverageHtml:
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-api coverage html --data-file=/app/.coverage -d /app/coverage/
 
 uiRun:
@@ -110,11 +109,5 @@ npmu:
 npmfix:
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-ui npm audit fix $(args)
 
-packageUI:
+buildui:
 	docker-compose -f deploy/docker/docker-compose.local.yml run --rm secretburner-ui quasar build
-
-vulnScan:
-	docker run aquasec/trivy image secretburner-ui:latest
-	docker run aquasec/trivy image secretburner-api:latest
-	docker run aquasec/trivy image secretburner-db:latest
-	docker run aquasec/trivy image secretburner-proxy:latest
