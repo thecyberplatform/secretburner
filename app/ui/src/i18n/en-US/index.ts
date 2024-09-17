@@ -167,4 +167,71 @@ export default {
   'ViewSecret:Reveal': 'Reveal secret',
   'ViewSecret:Burnt':
     'This secret has been burnt! Once you leave this page, it is irretrievable.',
+
+  'PrivacyPolicy:Body': `
+**Effective date: September 17, 2024**
+
+The short version
+- We collect your information only with your consent;
+- We only collect the minimum amount of personal information that is necessary to fulfill the purpose of your interaction;
+- We never store your personal information; and
+- We only use it as this Privacy Statement describes.
+
+
+### What information we collect and why
+
+Information from website browsers
+You do not collect any information from your browser if you simply navigate to our site.
+
+When you use our service (create a secret or request) we record your IP address in a temporary cache.
+
+Why do we collect this?
+We collect this information for the purpose of throttling and rate limiting to avoid abuse of our free service.
+
+How we share the information we collect
+- We do not share, sell, rent, or trade User Personal Information with third parties for any reason.
+- We do not host advertising on secretburner.com
+- We do not embed outside content except for Google Fonts.
+
+### Our use of cookies and tracking
+#### Cookies
+secretburner.com does not use cookies.
+
+#### Third-party tracking services
+We do not use tracking services.
+
+### How we secure your information
+secretburner.com takes all measures reasonably necessary to protect User Personal Information from unauthorized access, alteration, or destruction; maintain data accuracy; and help ensure the appropriate use of User Personal Information. We follow generally accepted industry standards to protect the personal information submitted to us, both during transmission and once we receive it.
+
+No method of transmission, or method of electronic storage, is 100% secure. Therefore, we cannot guarantee its absolute security. For more information, see our security disclosures.
+
+Our global privacy practices
+Information that we collect will be stored and processed in the United States of America in accordance with this Privacy Statement. However, we understand that we have users from different countries and regions with different privacy expectations, and we try to meet those needs.
+
+We may choose to offer data storage in the European Union or other countries in the future. In such circumstances, data entered and stored in the US will not be transferred to the EU or other countries without explicit consent and without changes to this Privacy Statement.
+
+secretburner.com provides clear methods of unambiguous, informed consent at the time of data collection, when we do collect your personal data.
+We collect only the minimum amount of personal data necessary, unless you choose to provide more. We encourage you to only give us the amount of data you are comfortable sharing.
+We offer you simple methods of accessing, correcting, or deleting the data we have collected.
+We provide our users notice, choice, accountability, security, and access, and we limit the purpose for processing. We also provide our users a method of recourse and enforcement. These are the Privacy Shield Principles, but they are also just good practices.
+Resolving Complaints
+If you have concerns about the way secretburner.com is handling your User Personal Information, please let us know immediately. We want to help. You may email us directly at info@secretburner.com with the subject line "Privacy Concerns." We will respond within 45 days at the latest.
+
+How we respond to compelled disclosure
+secretburner.com may disclose personally-identifying information or other information we collect about you to law enforcement in response to a valid subpoena, court order, warrant, or similar government order, or when we believe in good faith that disclosure is reasonably necessary to protect our property or rights, or those of third parties or the public at large.
+
+In complying with court orders and similar legal processes, secretburner.com strives for transparency. When permitted, we will make a reasonable effort to notify users of any disclosure of their information, unless we are prohibited by law or court order from doing so, or in rare, exigent circumstances.
+
+Data Retention and Deletion
+Our system is designed to be self-destructive. Any information you share with us will only exist for the length of time you specified when interacting with our service.
+
+How we communicate with you
+We don't know who you are. We will never contact you directly unless you have first made contact with us.
+
+Changes to our Privacy Statement
+Although most changes are likely to be minor, secretburner.com may change our Privacy Statement from time to time. As we don't know who you are, we encourage you to take not of the effective date, and check this page regularly to see if anything has changed.
+
+Contacting secretburner.com
+Questions regarding our Privacy Statement or information practices should be directed to info@secretburner.com.
+  `,
 };

@@ -36,6 +36,24 @@
         </div>
       </q-page>
     </q-page-container>
+    <q-footer class="bg-sb-dark-grey text-center text-white q-pa-md">
+      <div>
+        <q-btn flat no-caps href="https://status.secretburner.com/"
+          >Service Status
+        </q-btn>
+        |
+        <q-btn :to="{ name: 'privacy-policy' }" flat no-caps
+          >Privacy Policy
+        </q-btn>
+        |
+        <q-btn
+          flat
+          no-caps
+          href="https://github.com/thecyberplatform/secretburner/"
+          >Source Code
+        </q-btn>
+      </div>
+    </q-footer>
   </q-layout>
 </template>
 

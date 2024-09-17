@@ -35,6 +35,11 @@ const routes: RouteRecordRaw[] = [
         name: 'fulfil-request',
         component: () => import('pages/FulfilRequestPage.vue'),
       },
+      {
+        path: 'privacy-policy',
+        name: 'privacy-policy',
+        component: () => import('pages/PrivacyPolicyPage.vue'),
+      },
     ],
   },
 
